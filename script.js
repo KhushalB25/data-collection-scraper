@@ -113,7 +113,11 @@ const ProductsScraper = require('@scrapingant/amazon-proxy-scraper');
 
 const runTheScript = async () => {
   for (let i = 4; i < words.length; ) {
-    console.log('This is the letter being taken as the keyword',"index",i);
+    console.log(
+      'This is the letter being taken as the keyword',
+      'At Index: ',
+      i
+    );
     const scraper = new ProductsScraper({
       apiKey: '8fc37a442bb14eb297e1396895794e70',
       keyword: words[i],
@@ -126,7 +130,7 @@ const runTheScript = async () => {
       i++;
     }, console.error);
 
-    console.log('hey', words[i]);
+    console.log('chaning this back to normal', words[i]);
   }
 };
 
