@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# Written as part of https://www.scrapehero.com/how-to-scrape-amazon-product-reviews-using-python/
 from lxml import html
 from json import dump, loads
 from requests import get
@@ -11,10 +8,9 @@ from time import sleep
 
 
 def ParseReviews(asin):
-    # This script has only been tested with Amazon.com
-    amazon_url = 'https://www.amazon.com/dp/'+asin
-    # Add some recent user agent to prevent amazon from blocking the request
-    # Find some chrome user agent strings  here https://udger.com/resources/ua-list/browser-detail?browser=Chrome
+ 
+    amazon_url = 'https://www.amazon.in/dp/'+asin
+   
     headers = {
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'}
     for i in range(5):
@@ -24,7 +20,6 @@ def ParseReviews(asin):
         if response.status_code != 200:
             continue
 
-        # Removing the null bytes from the response.
         cleaned_response = response.text.replace('\x00', '')
 
         parser = html.fromstring(cleaned_response)
@@ -51,7 +46,6 @@ def ParseReviews(asin):
         ratings_dict = {}
         reviews_list = []
 
-        # Grabing the rating  section in product page
         for ratings in total_ratings:
             extracted_rating = ratings.xpath('./td//a//text()')
             if extracted_rating:
@@ -61,7 +55,7 @@ def ParseReviews(asin):
                 if rating_key:
                     ratings_dict.update({rating_key: rating_value})
 
-        # Parsing individual reviews
+    
         for review in reviews:
             XPATH_RATING = './/i[@data-hook="review-star-rating"]//text()'
             XPATH_REVIEW_HEADER = './/a[@data-hook="review-title"]//text()'
@@ -80,7 +74,7 @@ def ParseReviews(asin):
             raw_review_text2 = review.xpath(XPATH_REVIEW_TEXT_2)
             raw_review_text3 = review.xpath(XPATH_REVIEW_TEXT_3)
 
-            # Cleaning data
+        
             author = ' '.join(' '.join(raw_review_author).split())
             review_rating = ''.join(raw_review_rating).replace(
                 'out of 5 stars', '')
@@ -93,7 +87,7 @@ def ParseReviews(asin):
                 review_posted_date = None
             review_text = ' '.join(' '.join(raw_review_text1).split())
 
-            # Grabbing hidden comments if present
+
             if raw_review_text2:
                 json_loaded_review_data = loads(raw_review_text2[0])
                 json_loaded_review_data_text = json_loaded_review_data['rest']
@@ -133,12 +127,12 @@ def ParseReviews(asin):
 
 
 def ReadAsin():
-    # Add your own ASINs here
-    AsinList = ['B01ETPUQ6E', 'B017HW9DEW', 'B00U8KSIOM']
+
+    AsinList = ['B01ETPUQ6E','B017HW9DEW','B00U8KSIOM']
     extracted_data = []
 
     for asin in AsinList:
-        print("Downloading and processing page http://www.amazon.com/dp/" + asin)
+        print("Downloading and processing page http://www.amazon.in/dp/" + asin)
         extracted_data.append(ParseReviews(asin))
         sleep(5)
     f = open('data.json', 'w')
